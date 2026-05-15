@@ -30,9 +30,6 @@ class Settings(BaseSettings):
     COLLECT_MAX_REGULAR: int = 50
     COLLECT_MAX_TIMESTAMP: int = 50
 
-    # Path to the existing crawl_raw_data package (for importing collect_video_data)
-    CRAWL_RAW_DATA_PATH: str = "../data_construction/crawl_raw_data"
-
 
 _settings: Settings | None = None
 

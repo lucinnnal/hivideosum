@@ -129,7 +129,7 @@ GET  /health                   { "status": "ok" }
 
 ## 기존 코드와의 연결
 
-- `worker/steps/collect.py` → `data_construction/crawl_raw_data/youtube_collector.collect_video_data` 직접 import (CRAWL_RAW_DATA_PATH로 sys.path 확장)
+- `worker/steps/collect.py` → `worker/collectors/youtube_collector.collect_video_data` (자막·댓글 수집기를 프로젝트 내부에 포함)
 - `inference/prompts/filter_prompt.py` → `filter_comments_with_gemini.py`의 3축 프롬프트 + 파이프 응답 파서를 함수화
 - `inference/prompts/summary_prompt.py` → `summarize_with_gemini.py`의 3문단 산문 프롬프트와 헬퍼 4종
 

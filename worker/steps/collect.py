@@ -1,27 +1,17 @@
 """Step 1: collect transcript + comments for a single YouTube video.
 
-Wraps data_construction/crawl_raw_data/youtube_collector.collect_video_data.
+Thin async wrapper around :func:`worker.collectors.youtube_collector.collect_video_data`.
 """
 
 from __future__ import annotations
 
 import asyncio
-import os
-import sys
 from typing import Any
 
-from api.settings import get_settings
 from shared.logging import get_logger
+from worker.collectors import collect_video_data
 
 logger = get_logger(__name__)
-
-
-def _ensure_crawl_module_on_path() -> None:
-    """Add the existing crawl_raw_data directory to sys.path so we can import it."""
-    settings = get_settings()
-    crawl_path = os.path.abspath(settings.CRAWL_RAW_DATA_PATH)
-    if crawl_path not in sys.path:
-        sys.path.insert(0, crawl_path)
 
 
 async def collect(
@@ -29,14 +19,22 @@ async def collect(
     max_regular: int,
     max_timestamp: int,
 ) -> dict[str, Any]:
-    """Run the (blocking) collector in a thread.
+    """Run the (blocking) collector in a thread and return its record.
 
-    Returns the collected record produced by collect_video_data.
-    Raises ValueError on unrecoverable errors (invalid id, subtitles disabled, geo-blocked).
+    Args:
+        video_url: Full YouTube URL submitted by the user.
+        max_regular: Cap on the number of regular comments to collect.
+        max_timestamp: Cap on the number of timestamp comments to collect.
+
+    Returns:
+        The record produced by ``collect_video_data`` (see its docstring
+        for the exact shape).
+
+    Raises:
+        ValueError: When ``collect_video_data`` reports a failure (e.g.
+            invalid video ID, subtitles disabled, geo-blocked). The message
+            is formatted as ``"collect_failed:{reason}"``.
     """
-    _ensure_crawl_module_on_path()
-    from youtube_collector import collect_video_data  # noqa: E402
-
     logger.info("Collecting %s", video_url)
     record = await asyncio.to_thread(
         collect_video_data,
