@@ -1,0 +1,57 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  vllm:
+    image: vllm/vllm-openai:latest
+    runtime: nvidia
+    command: >
+      --model google/gemma-4-E4B-it
+      --enable-lora
+      --lora-modules hivideosum=/adapters/hivideosum
+      --max-model-len 20000
+      --port 8001
+    volumes:
+      - ./inference/adapters:/adapters
+    ports:
+      - "8001:8001"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  api:
+    build: .
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    env_file: .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa.json
+    volumes:
+      - ${GOOGLE_SA_PATH:-/dev/null}:/secrets/sa.json:ro
+    depends_on:
+      - redis
+      - vllm
+    ports:
+      - "8000:8000"
+
+  worker:
+    build: .
+    command: arq worker.runner.WorkerSettings
+    env_file: .env
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/sa.json
+    volumes:
+      - ${GOOGLE_SA_PATH:-/dev/null}:/secrets/sa.json:ro
+    depends_on:
+      - redis
+      - vllm
+
+volumes:
+  redis_data:

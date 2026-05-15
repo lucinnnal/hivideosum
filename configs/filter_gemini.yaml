@@ -1,0 +1,8 @@
+model_name: "gemini-3-flash-preview"
+
+generation:
+  temperature: 0.1
+  top_p: 0.95
+  max_output_tokens: 4096
+  thinking:
+    thinking_level: low   # none | low | medium | high

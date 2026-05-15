@@ -1,0 +1,26 @@
+# --- Web framework ---
+fastapi>=0.115
+uvicorn[standard]>=0.30
+
+# --- Job queue ---
+arq>=0.26
+redis>=5.0
+
+# --- Settings & schemas ---
+pydantic>=2.7
+pydantic-settings>=2.4
+python-dotenv>=1.0
+pyyaml>=6.0
+
+# --- LLM clients ---
+google-genai>=0.3        # Vertex AI Gemini (filter step)
+openai>=1.50             # vLLM OpenAI-compatible API (summary step)
+
+# --- YouTube collection ---
+yt-dlp>=2024.10
+youtube-transcript-api>=0.6
+youtube-comment-downloader>=0.1.76
+
+# --- HTTP / utilities ---
+httpx>=0.27
+tenacity>=9.0
