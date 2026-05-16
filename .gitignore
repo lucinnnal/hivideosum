@@ -1,2 +1,4 @@
 GUIDE.md
 inference/adapters/**/*.safetensors
+.env
+secrets/
