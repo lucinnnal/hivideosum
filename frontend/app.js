@@ -12,9 +12,27 @@ const $form       = document.getElementById('form');
 const $url        = document.getElementById('url');
 const $submitBtn  = document.getElementById('submit-btn');
 const $errorBox   = document.getElementById('error-box');
+const $videoWrap  = document.getElementById('video-wrap');
+const $videoFrame = document.getElementById('video-frame');
 const $pipeline   = document.getElementById('pipeline');
 const $caption    = document.getElementById('progress-caption');
 const $results    = document.getElementById('results');
+
+function extractVideoId(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'youtu.be') return u.pathname.slice(1).split('?')[0];
+    if (u.hostname.includes('youtube.com')) return u.searchParams.get('v');
+  } catch { /* ignore */ }
+  return null;
+}
+
+function showVideo(url) {
+  const id = extractVideoId(url);
+  if (!id) return;
+  $videoFrame.src = `https://www.youtube.com/embed/${id}`;
+  $videoWrap.classList.add('visible');
+}
 
 function esc(s) {
   return (s || '').replace(/[&<>"]/g, c =>
@@ -25,6 +43,8 @@ function esc(s) {
 function resetUI() {
   $errorBox.textContent = '';
   $errorBox.classList.remove('visible');
+  $videoFrame.src = '';
+  $videoWrap.classList.remove('visible');
   $pipeline.classList.remove('visible');
   $results.classList.remove('visible');
 
@@ -136,6 +156,7 @@ $form.addEventListener('submit', async (e) => {
   e.preventDefault();
   resetUI();
   $submitBtn.disabled = true;
+  showVideo($url.value);
   updatePipeline('queued', 0);
   $caption.textContent = '🚀 요청을 보내고 있어요...';
 

@@ -350,6 +350,27 @@
       to   { opacity: 1; transform: none; }
     }
 
+    /* ── Video embed ── */
+    .video-wrap {
+      display: none;
+      margin-bottom: 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 16 / 9;
+      background: var(--surface);
+      animation: fadeSlideUp .4s ease both;
+    }
+
+    .video-wrap.visible { display: block; }
+
+    .video-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 480px) {
       .input-row { flex-direction: column; }
@@ -382,6 +403,14 @@
     </form>
 
     <div id="error-box" class="error-box"></div>
+
+    <div id="video-wrap" class="video-wrap">
+      <iframe id="video-frame" class="video-frame"
+        src=""
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
 
     <div id="pipeline" class="pipeline">
       <div class="stages">
