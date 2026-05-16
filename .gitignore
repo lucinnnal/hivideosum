@@ -1,2 +1,2 @@
 GUIDE.md
-*.safetensors
+/home/kipyokim/hivideosum/inference/adapters/hivideosum/adapter_model.safetensors
