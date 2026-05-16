@@ -11,7 +11,7 @@ from redis.asyncio import from_url
 from api.services import JobManager, make_vllm_client
 from api.settings import get_settings
 from shared.logging import setup_logging
-from worker.pipeline import run_pipeline
+from worker.pipeline import run_pipeline as _run_pipeline_impl
 from worker.steps import load_filter_config, make_gemini_client
 
 
@@ -35,12 +35,12 @@ async def shutdown(ctx: dict) -> None:
         await redis.close()
 
 
-async def _task_run_pipeline(ctx: dict, *, job_id: str, video_url: str) -> dict:
+async def run_pipeline(ctx: dict, *, job_id: str, video_url: str) -> dict:
     from api.schemas import JobStatus
 
     jm: JobManager = ctx["jm"]
     try:
-        return await run_pipeline(
+        return await _run_pipeline_impl(
             job_id=job_id,
             video_url=video_url,
             jm=jm,
@@ -56,17 +56,10 @@ async def _task_run_pipeline(ctx: dict, *, job_id: str, video_url: str) -> dict:
         raise
 
 
-# arq's discovery key
-_task_run_pipeline.__name__ = "run_pipeline"
-
-
 class WorkerSettings:
-    functions = [_task_run_pipeline]
+    functions = [run_pipeline]
     on_startup = startup
     on_shutdown = shutdown
     job_timeout = 600  # 10 min
     max_jobs = 4
-
-    @classmethod
-    def redis_settings(cls) -> RedisSettings:
-        return RedisSettings.from_dsn(get_settings().REDIS_URL)
+    redis_settings = RedisSettings.from_dsn(get_settings().REDIS_URL)

@@ -108,10 +108,79 @@ API: <http://localhost:8000/docs>
 
 ## docker-compose 실행
 
+### 1. Docker + NVIDIA Container Toolkit 설치
+
 ```bash
-cp .env.example .env  # 값 채우기
-docker-compose up --build
+# Docker 설치
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# NVIDIA Container Toolkit 설치
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
+  | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \
+  | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
+  | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+sudo apt update && sudo apt install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
 ```
+
+### 2. .env 작성
+
+```bash
+cp .env.example .env
+```
+
+`.env`에서 채워야 할 항목:
+
+| 항목 | 설명 |
+|---|---|
+| `GOOGLE_SA_PATH` | GCP 서비스 계정 JSON 경로 (아래 참고) |
+| `HUGGING_FACE_HUB_TOKEN` | HuggingFace 토큰 (Gemma 모델 접근용) |
+| `WEBSHARE_PROXY_USERNAME/PASSWORD` | (선택) 대규모 수집 시 프록시 |
+
+**Vertex AI 인증 방법 (서비스 계정 키 생성이 막혀 있는 경우)**
+
+조직 정책으로 서비스 계정 JSON 발급이 불가할 때는 gcloud ADC 자격증명을 마운트한다.
+
+```bash
+# gcloud CLI 설치
+curl https://sdk.cloud.google.com | bash
+exec -l $SHELL
+
+# 인증
+gcloud auth application-default login
+```
+
+로그인 후 생성된 파일을 `.env`에 지정:
+```
+GOOGLE_SA_PATH=/home/$USER/.config/gcloud/application_default_credentials.json
+```
+
+**HuggingFace 토큰**
+
+`google/gemma-4-E4B-it`은 gated 모델이므로 라이선스 동의 후 토큰이 필요하다.
+[huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)에서 발급 후 `.env`에 추가:
+```
+HUGGING_FACE_HUB_TOKEN=hf_xxxx
+```
+
+### 3. 실행
+
+```bash
+sudo docker compose up --build
+```
+
+처음 실행 시 vLLM 이미지(수 GB)와 Gemma 모델을 다운로드하므로 시간이 걸린다.
+
+UI: <http://localhost:8000/ui/>
+API: <http://localhost:8000/docs>
+
+### 주의사항
+
+- 시스템에 Redis가 이미 실행 중이면 포트 6379 충돌이 발생한다: `sudo systemctl stop redis-server`
+- 재시작 시 기존 컨테이너를 먼저 정리: `sudo docker compose down`
 
 ## API 스펙
 

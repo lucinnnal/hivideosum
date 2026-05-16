@@ -14,7 +14,10 @@ services:
       --enable-lora
       --lora-modules hivideosum=/adapters/hivideosum
       --max-model-len 20000
+      --max-lora-rank 32
       --port 8001
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
     volumes:
       - ./inference/adapters:/adapters
     ports:
