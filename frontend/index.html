@@ -11,17 +11,17 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:            #090910;
-      --surface:       #111118;
-      --surface-2:     #18181f;
-      --border:        #222230;
-      --border-soft:   #1a1a26;
-      --accent:        #e8a830;
-      --accent-dim:    rgba(232,168,48,.13);
-      --accent-glow:   rgba(232,168,48,.06);
-      --text:          #dddde8;
-      --text-muted:    #7a7a90;
-      --text-dim:      #36364a;
+      --bg:            #0d0d1a;
+      --surface:       #14141f;
+      --surface-2:     #1c1c28;
+      --border:        #2a2a3a;
+      --border-soft:   #20202e;
+      --accent:        #f5b830;
+      --accent-dim:    rgba(245,184,48,.18);
+      --accent-glow:   rgba(245,184,48,.09);
+      --text:          #e8e8f2;
+      --text-muted:    #9898b4;
+      --text-dim:      #50506a;
       --success:       #3ecf8e;
       --error:         #f06060;
       --error-dim:     rgba(240,96,96,.1);
@@ -90,10 +90,10 @@
     .logo .accent { color: var(--accent); }
 
     .tagline {
-      font-size: .78rem;
-      color: var(--text-dim);
-      letter-spacing: .12em;
-      text-transform: uppercase;
+      font-size: .92rem;
+      color: var(--text-muted);
+      letter-spacing: .01em;
+      margin-top: .4rem;
     }
 
     /* ── Form ── */
@@ -363,7 +363,7 @@
 
     <header class="header">
       <h1 class="logo">Hi-Video<span class="accent">Sum</span></h1>
-      <p class="tagline">유튜브 자막·댓글 분석 &nbsp;·&nbsp; 3문단 산문 요약</p>
+      <p class="tagline">🎬 링크만 전달해주시면 요약해드릴게요! ✨</p>
     </header>
 
     <form id="form" class="form-wrap">
